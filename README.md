@@ -2,6 +2,8 @@
 
 Denormalizr takes an entity normalized by [normalizr](https://github.com/gaearon/normalizr), and returns its complete tree including all the referred entities.
 
+[![Build Status](https://travis-ci.org/gpbl/denormalizr.svg?branch=master)](https://travis-ci.org/gpbl/denormalizr)
+
 > If you are using Immutable data, try [denormalizr-immutable](https://github.com/dehbmarques/denormalizr-immutable).
 
 ## Installation
