@@ -2,6 +2,8 @@
 
 Denormalizr takes an entity normalized by [normalizr](https://github.com/gaearon/normalizr), and returns its complete tree including all the referred entities.
 
+This module is useful when consuming normalized data, e.g. from `mapStateToProps` in a redux `connect()`. While normalizr is great on making data consistent between the app, reassembling an entity can be a tedious work. Denormalizr can help!
+
 [![Build Status](https://travis-ci.org/gpbl/denormalizr.svg?branch=master)](https://travis-ci.org/gpbl/denormalizr)
 
 > If you are using Immutable data, try [denormalizr-immutable](https://github.com/dehbmarques/denormalizr-immutable).
