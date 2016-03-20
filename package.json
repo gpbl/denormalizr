@@ -1,7 +1,7 @@
 {
   "name": "denormalizr",
-  "version": "0.0.1",
-  "description": "Denormalizer for nomalizr",
+  "version": "0.0.2",
+  "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
   "scripts": {
     "prebuild": "rimraf dist lib",
