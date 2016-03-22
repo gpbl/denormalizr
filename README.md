@@ -24,7 +24,7 @@ const denormalized = denormalizer(entity, entities, entitySchema);
 ### Example
 
 ```js
-import { denormalizer } from "denormalizr";
+import { denormalize } from "denormalizr";
 const articleSchema = new Schema('articles');
 const userSchema = new Schema('users');
 

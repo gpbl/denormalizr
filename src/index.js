@@ -1,9 +1,17 @@
 import ArraySchema from 'normalizr/lib/IterableSchema';
 import EntitySchema from 'normalizr/lib/EntitySchema';
+import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from "lodash/merge";
 
 export function denormalize(entity, entities, entitySchema) {
   const denormalized = {};
+  if (entitySchema instanceof UnionSchema) {
+    return denormalize(
+      Object.assign({}, entity, { [entity.schema]: entity.id }),
+      entities,
+      entitySchema.getItemSchema()
+    )[entity.schema];
+  }
   Object.keys(entitySchema)
     .filter(attribute => attribute.substring(0, 1) !== "_")
     .filter(attribute => attribute in entity)
