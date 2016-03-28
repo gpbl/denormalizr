@@ -14,7 +14,7 @@ export function denormalize(entity, entities, entitySchema) {
   }
   Object.keys(entitySchema)
     .filter(attribute => attribute.substring(0, 1) !== "_")
-    .filter(attribute => attribute in entity)
+    .filter(attribute => !!entity[attribute])
     .forEach(attribute => {
 
       const itemId = entity[attribute];

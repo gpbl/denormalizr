@@ -7,7 +7,7 @@ import { normalize, Schema, arrayOf, unionOf } from 'normalizr';
 
 describe("denormalize", () => {
 
-  describe("entities and collections", () => {
+  describe("parsing entities and collections", () => {
     const articleSchema = new Schema('articles');
     const userSchema = new Schema('users');
     const collectionSchema = new Schema('collections');
@@ -43,6 +43,10 @@ describe("denormalize", () => {
           id: 1,
           name: 'Dan'
         }
+      }, {
+        id: 3,
+        title: 'Without author',
+        author: null
       }]
     };
 
@@ -54,9 +58,15 @@ describe("denormalize", () => {
       const article = data.entities.articles["1"];
       expect(denormalize(article, data.entities, articleSchema)).to.be.eql(response.articles[0]);
     });
+
+    it("should ignore entities without values", () => {
+      const article = data.entities.articles["3"];
+      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(response.articles[2]);
+    });
+
   });
 
-  describe("unions", () => {
+  describe("parsing union schemas", () => {
 
     const postSchema = new Schema('posts');
     const userSchema = new Schema('users');
