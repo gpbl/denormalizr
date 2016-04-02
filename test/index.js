@@ -66,6 +66,43 @@ describe("denormalize", () => {
 
   });
 
+  describe("parsing interdependents objects", () => {
+    const articleSchema = new Schema('articles');
+    const userSchema = new Schema('users');
+
+    articleSchema.define({
+      author: userSchema,
+    });
+
+    userSchema.define({
+      articles: arrayOf(articleSchema),
+    });
+
+    const response = {
+      articles: [{
+        id: 80,
+        title: 'Some Article',
+        author: {
+          id: 1,
+          name: 'Dan',
+          articles: [80],
+        }
+      }]
+    };
+
+    const data = normalize(response, {
+      articles: arrayOf(articleSchema)
+    });
+
+    it("should handle recursion for interdependency", () => {
+      const article = data.entities.articles["80"];
+      const denormalized = denormalize(article, data.entities, articleSchema);
+
+      expect(denormalized.author.articles[0]).to.be.eql(denormalized);
+    });
+
+  });
+
   describe("parsing union schemas", () => {
 
     const postSchema = new Schema('posts');
