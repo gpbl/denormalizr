@@ -3,14 +3,28 @@ import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from "lodash/merge";
 
-export function denormalize(entity, entities, entitySchema) {
+function denormalizeArray(items, entities, schema) {
+  const itemSchema = schema.getItemSchema();
+  const itemKey = itemSchema.getKey();
+  return items.map(id => {
+    const item = entities[itemKey][id];
+    return denormalize(item, entities, itemSchema);
+  });
+}
+
+function denormalizeUnion(entity, entities, schema) {
+  const itemSchema = schema.getItemSchema();
+  return denormalize(
+    Object.assign({}, entity, { [entity.schema]: entity.id }),
+    entities,
+    itemSchema
+  )[entity.schema];
+}
+
+export function denormalize(entity, entities, entitySchema, bag = {}) {
   const denormalized = {};
   if (entitySchema instanceof UnionSchema) {
-    return denormalize(
-      Object.assign({}, entity, { [entity.schema]: entity.id }),
-      entities,
-      entitySchema.getItemSchema()
-    )[entity.schema];
+    return denormalizeUnion(entity, entities, entitySchema);
   }
   Object.keys(entitySchema)
     .filter(attribute => attribute.substring(0, 1) !== "_")
@@ -20,15 +34,8 @@ export function denormalize(entity, entities, entitySchema) {
       const itemId = entity[attribute];
 
       if (entitySchema[attribute] instanceof ArraySchema) {
-        const itemSchema = entitySchema[attribute].getItemSchema();
-        const itemKey = itemSchema.getKey();
-        denormalized[attribute] = itemId.map(id => {
-          const item = entities[itemKey][id];
-          return denormalize(item, entities, itemSchema);
-        });
-      }
-
-      if (entitySchema[attribute] instanceof EntitySchema) {
+        denormalized[attribute] = denormalizeArray(itemId, entities, entitySchema[attribute]);
+      } else if (entitySchema[attribute] instanceof EntitySchema) {
         const itemSchema = entitySchema[attribute];
         const itemKey = itemSchema.getKey();
         const item = entities[itemKey][itemId];
