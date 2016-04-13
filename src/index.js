@@ -4,14 +4,12 @@ import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from "lodash/merge";
 
 function getItem(id, key, schema, entities, bag) {
-  if(!bag[key]) {
+  if(!bag.hasOwnProperty(key)) {
     bag[key] = {};
   }
-
-  if(!bag[key][id]) {
+  if(!bag[key].hasOwnProperty(id)) {
     bag[key][id] = denormalize(entities[key][id], entities, schema, bag);
   }
-
   return bag[key][id];
 }
 
