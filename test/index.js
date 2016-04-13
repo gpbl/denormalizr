@@ -7,6 +7,11 @@ import { normalize, Schema, arrayOf, unionOf } from 'normalizr';
 
 describe("denormalize", () => {
 
+  it("should return undefined when denormalizing an undefined entity", () => {
+    expect(denormalize(undefined)).to.be.undefined;
+  });
+
+
   describe("parsing entities and collections", () => {
     const articleSchema = new Schema('articles');
     const userSchema = new Schema('users');

@@ -30,6 +30,9 @@ function denormalizeUnion(entity, entities, schema, bag) {
 }
 
 export function denormalize(entity, entities, entitySchema, bag = {}) {
+  if (typeof entity === 'undefined') {
+    return entity;
+  }
   const denormalized = merge({}, entity);
   if (entitySchema instanceof UnionSchema) {
     return denormalizeUnion(entity, entities, entitySchema, bag);
