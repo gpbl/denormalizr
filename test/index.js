@@ -26,33 +26,50 @@ describe("denormalize", () => {
       curator: userSchema
     });
 
-    const response = {
-      articles: [{
+    const article1 = {
+      id: 1,
+      title: 'Some Article',
+      author: {
         id: 1,
-        title: 'Some Article',
-        author: {
-          id: 1,
-          name: 'Dan'
-        },
-        collections: [{
-          id: 1,
-          name: 'Dan'
-        }, {
-          id: 2,
-          name: 'Giampaolo'
-        }]
+        name: 'Dan'
+      },
+      collections: [{
+        id: 1,
+        name: 'Dan'
       }, {
         id: 2,
-        title: 'Other Article',
-        author: {
-          id: 1,
-          name: 'Dan'
-        }
-      }, {
-        id: 3,
-        title: 'Without author',
-        author: null
+        name: 'Giampaolo'
       }]
+    };
+    const article2 = {
+      id: 2,
+      title: 'Other Article',
+      author: {
+        id: 1,
+        name: 'Dan'
+      }
+    };
+    const article3 = {
+      id: 3,
+      title: 'Without author',
+      author: null
+    };
+
+    const article4 = {
+      id: 4,
+      title: 'Some Article',
+      author: {
+        id: '',
+        name: 'Deleted'
+      },
+      collections: [{
+        id: '',
+        name: 'Deleted'
+      }]
+    };
+
+    const response = {
+      articles: [article1, article2, article3, article4]
     };
 
     const data = normalize(response, {
@@ -61,13 +78,19 @@ describe("denormalize", () => {
 
     it("should return the original entity", () => {
       const article = data.entities.articles["1"];
-      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(response.articles[0]);
+      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article1);
     });
 
-    it("should ignore entities without values", () => {
+    it("should work with entities without values", () => {
       const article = data.entities.articles["3"];
-      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(response.articles[2]);
+      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article3);
     });
+
+    it("should work with entities with empty id", () => {
+      const article = data.entities.articles["4"];
+      expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article4);
+    });
+
 
   });
 

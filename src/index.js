@@ -37,17 +37,20 @@ export function denormalize(entity, entities, entitySchema, bag = {}) {
   if (entitySchema instanceof UnionSchema) {
     return denormalizeUnion(entity, entities, entitySchema, bag);
   }
-
   if (entitySchema instanceof EntitySchema) {
     const key = entitySchema.getKey();
     const id = denormalized[entitySchema.getIdAttribute()];
     bag[key] = Object.assign(bag[key] || {}, {[id]: denormalized});
   }
-
   Object.keys(entitySchema)
     .filter(attribute => attribute.substring(0, 1) !== "_")
-    .filter(attribute => !!entity[attribute])
+    .filter(attribute => typeof entity[attribute] !== 'undefined')
     .forEach(attribute => {
+
+      if (entity[attribute] === null) {
+        denormalized[attribute] = null;
+        return;
+      }
 
       const itemId = entity[attribute];
 
