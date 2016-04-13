@@ -1,4 +1,4 @@
-### [v0.0.9](https://github.com/gpbl/denormalizr/tree/v0.0.8) (2016-04-05)
+### [v0.0.9](https://github.com/gpbl/denormalizr/tree/v0.0.9) (2016-04-05)
 
 * Denormalize undefined entities as `undefined`
 * Accept empty strings as valid keys
