@@ -17,8 +17,8 @@ npm install denormalizr --save
 ## Usage
 
 ```js
-import { denormalizer } from "denormalizr";
-const denormalized = denormalizer(entity, entities, entitySchema);
+import { denormalize } from "denormalizr";
+const denormalized = denormalize(entity, entities, entitySchema);
 ```
 
 ### Example
