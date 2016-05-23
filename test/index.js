@@ -177,4 +177,51 @@ describe("denormalize", () => {
     });
   });
 
+  describe("parsing nested plain objects", () => {
+
+    const articleSchema = new Schema("article");
+    const userSchema = new Schema("user");
+
+    articleSchema.define({
+      likes: arrayOf({
+        user: userSchema
+      })
+    });
+
+    const response = {
+      articles: [{
+        id: 1,
+        title: "Article 1",
+        likes: [{
+          user: {
+            id: 1,
+            name: "John"
+          }
+        }, {
+          user: {
+            id: 2,
+            name: "Alex"
+          }
+        }]
+      }, {
+        id: 2,
+        title: "Article 2",
+        likes: [{
+          user: {
+            id: 1,
+            name: "John"
+          }
+        }]
+      }]
+    };
+
+    const data = normalize(response.articles, arrayOf(articleSchema));
+
+    it("should denormalize nested non entity objects", () => {
+      const denormalized = data.result.map(id => denormalize(data.entities.article[id], data.entities, articleSchema));
+      expect(denormalized).to.be.deep.eql(response.articles);
+    });
+    
+  });
+
 });

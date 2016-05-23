@@ -2,6 +2,7 @@ import ArraySchema from 'normalizr/lib/IterableSchema';
 import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from "lodash/merge";
+import isPlainObject from "lodash/isPlainObject";
 
 function getItem(id, key, schema, entities, bag) {
   if(!bag.hasOwnProperty(key)) {
@@ -15,6 +16,9 @@ function getItem(id, key, schema, entities, bag) {
 
 function denormalizeArray(items, entities, schema, bag) {
   const itemSchema = schema.getItemSchema();
+  if (isPlainObject(itemSchema)) {
+    return items.map(o => denormalize(o, entities, itemSchema, bag));
+  }
   const itemKey = itemSchema.getKey();
   return items.map(id => getItem(id, itemKey, itemSchema, entities, bag));
 }
