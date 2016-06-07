@@ -56,14 +56,16 @@ export function denormalize(entity, entities, entitySchema, bag = {}) {
         return;
       }
 
-      const itemId = entity[attribute];
+      const item = entity[attribute];
 
       if (entitySchema[attribute] instanceof ArraySchema) {
-        denormalized[attribute] = denormalizeArray(itemId, entities, entitySchema[attribute], bag);
+        denormalized[attribute] = denormalizeArray(item, entities, entitySchema[attribute], bag);
       } else if (entitySchema[attribute] instanceof EntitySchema) {
         const itemSchema = entitySchema[attribute];
         const itemKey = itemSchema.getKey();
-        denormalized[attribute] = getItem(itemId, itemKey, itemSchema, entities, bag);
+        denormalized[attribute] = getItem(item, itemKey, itemSchema, entities, bag);
+      } else {
+        denormalized[attribute] = denormalize(item, entities, entitySchema[attribute], bag);
       }
 
     });

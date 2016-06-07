@@ -224,4 +224,54 @@ describe("denormalize", () => {
     
   });
 
+  describe("parsing nested objects", () => {
+
+    const articleSchema = new Schema("article");
+    const userSchema = new Schema("user");
+
+    articleSchema.define({
+      likes: {
+        usersWhoLikes: arrayOf( userSchema )
+      }
+    });
+
+    const response = {
+      articles: [{
+        id: 1,
+        title: "Article 1",
+        likes: {
+          usersWhoLikes: [
+          {
+            id: 1,
+            name: "John"
+          },
+          {
+            id: 2,
+            name: "Alex"
+          }
+          ]
+        }
+      }, {
+        id: 2,
+        title: "Article 2",
+        likes: {
+          usersWhoLikes: [
+          {
+            id: 1,
+            name: "John"
+          }
+          ]
+        }
+      }]
+    };
+
+    const data = normalize(response.articles, arrayOf(articleSchema));
+
+    it("should denormalize nested non entity objects recursively", () => {
+      const denormalized = data.result.map(id => denormalize(data.entities.article[id], data.entities, articleSchema));
+      expect(denormalized).to.be.deep.eql(response.articles);
+    });
+
+  });
+
 });
