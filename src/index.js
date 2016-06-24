@@ -3,13 +3,14 @@ import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from "lodash/merge";
 import isPlainObject from "lodash/isPlainObject";
+import { isImmutable, getIn, setIn } from './immutable_helpers'
 
 function getItem(id, key, schema, entities, bag) {
   if(!bag.hasOwnProperty(key)) {
     bag[key] = {};
   }
   if(!bag[key].hasOwnProperty(id)) {
-    bag[key][id] = denormalize(entities[key][id], entities, schema, bag);
+    bag[key][id] = denormalize(getIn(entities, [key, id]), entities, schema, bag);
   }
   return bag[key][id];
 }
@@ -37,35 +38,35 @@ export function denormalize(entity, entities, entitySchema, bag = {}) {
   if (typeof entity === 'undefined') {
     return entity;
   }
-  const denormalized = merge({}, entity);
+  let denormalized = isImmutable(entity) ? entity : merge({}, entity)
   if (entitySchema instanceof UnionSchema) {
     return denormalizeUnion(entity, entities, entitySchema, bag);
   }
   if (entitySchema instanceof EntitySchema) {
     const key = entitySchema.getKey();
-    const id = denormalized[entitySchema.getIdAttribute()];
+    const id = getIn(denormalized, [entitySchema.getIdAttribute()]);
     bag[key] = Object.assign(bag[key] || {}, {[id]: denormalized});
   }
   Object.keys(entitySchema)
     .filter(attribute => attribute.substring(0, 1) !== "_")
-    .filter(attribute => typeof entity[attribute] !== 'undefined')
+    .filter(attribute => typeof getIn(entity, [attribute]) !== 'undefined')
     .forEach(attribute => {
 
-      if (entity[attribute] === null) {
-        denormalized[attribute] = null;
+      if (getIn(entity, [attribute]) === null) {
+        denormalized = setIn(denormalized, [attribute], null);
         return;
       }
 
-      const item = entity[attribute];
+      const item = getIn(entity, [attribute]);
 
       if (entitySchema[attribute] instanceof ArraySchema) {
-        denormalized[attribute] = denormalizeArray(item, entities, entitySchema[attribute], bag);
+        denormalized = setIn(denormalized, [attribute], denormalizeArray(item, entities, entitySchema[attribute], bag));
       } else if (entitySchema[attribute] instanceof EntitySchema) {
         const itemSchema = entitySchema[attribute];
         const itemKey = itemSchema.getKey();
-        denormalized[attribute] = getItem(item, itemKey, itemSchema, entities, bag);
+        denormalized = setIn(denormalized, [attribute], getItem(item, itemKey, itemSchema, entities, bag));
       } else {
-        denormalized[attribute] = denormalize(item, entities, entitySchema[attribute], bag);
+        denormalized = setIn(denormalized, [attribute], denormalize(item, entities, entitySchema[attribute], bag));
       }
 
     });
