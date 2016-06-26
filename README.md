@@ -71,6 +71,42 @@ console.log(denormalized);
 //   },
 // }
 
+// Denormalize a list
+const denormalized = denormalize([article], normalized.entities, articleSchema);
+console.log(denormalized);
+// [{
+//   id: 1,
+//   title: 'Some Article',
+//   author: {
+//     id: 1,
+//     name: 'Dan'
+//   },
+// }]
+
+// Denormalize by passing just the ID
+const denormalized = denormalize(1, normalized.entities, articleSchema);
+console.log(denormalized);
+// {
+//   id: 1,
+//   title: 'Some Article',
+//   author: {
+//     id: 1,
+//     name: 'Dan'
+//   },
+// }
+
+// Denormalize by passing a list of IDs
+const denormalized = denormalize([1], normalized.entities, articleSchema);
+console.log(denormalized);
+// [{
+//   id: 1,
+//   title: 'Some Article',
+//   author: {
+//     id: 1,
+//     name: 'Dan'
+//   },
+// }]
+
 ```
 
 ## Usage with Immutable

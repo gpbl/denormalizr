@@ -4,6 +4,7 @@ import { expect } from "chai";
 
 import { denormalize } from "../src";
 import { normalize, Schema, arrayOf, unionOf } from 'normalizr';
+import cloneDeep from "lodash/cloneDeep";
 
 describe("denormalize", () => {
 
@@ -72,26 +73,43 @@ describe("denormalize", () => {
       articles: [article1, article2, article3, article4]
     };
 
-    const data = normalize(response, {
+    // Function to return the result of the normalize function. Needed so that
+    // state doesn't hang around between specs.
+    const getNormalizedEntities = () => normalize(response, {
       articles: arrayOf(articleSchema)
     });
 
+
     it("should return the original entity", () => {
+      const data = getNormalizedEntities()
       const article = data.entities.articles["1"];
       expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article1);
     });
 
     it("should work with entities without values", () => {
+      const data = getNormalizedEntities()
       const article = data.entities.articles["3"];
       expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article3);
     });
 
     it("should work with entities with empty id", () => {
+      const data = getNormalizedEntities()
       const article = data.entities.articles["4"];
       expect(denormalize(article, data.entities, articleSchema)).to.be.eql(article4);
     });
 
+    it("should return the original entity with id as argument", () => {
+      const data = getNormalizedEntities()
+      expect(denormalize("1", data.entities, articleSchema)).to.be.eql(article1);
+    });
 
+    it("does not mutate the entities", () => {
+      const data = getNormalizedEntities()
+      const normalizedEntities = cloneDeep(data.entities)
+
+      denormalize("1", data.entities, articleSchema)
+      expect(normalizedEntities).to.be.eql(data.entities);
+    });
   });
 
   describe("parsing interdependents objects", () => {
@@ -221,7 +239,7 @@ describe("denormalize", () => {
       const denormalized = data.result.map(id => denormalize(data.entities.article[id], data.entities, articleSchema));
       expect(denormalized).to.be.deep.eql(response.articles);
     });
-    
+
   });
 
   describe("parsing nested objects", () => {
@@ -270,6 +288,91 @@ describe("denormalize", () => {
     it("should denormalize nested non entity objects recursively", () => {
       const denormalized = data.result.map(id => denormalize(data.entities.article[id], data.entities, articleSchema));
       expect(denormalized).to.be.deep.eql(response.articles);
+    });
+
+  });
+
+  describe("parsing an array of entities and collections", () => {
+    const articleSchema = new Schema('articles');
+    const userSchema = new Schema('users');
+    const collectionSchema = new Schema('collections');
+
+    articleSchema.define({
+      author: userSchema,
+      collections: arrayOf(collectionSchema)
+    });
+
+    collectionSchema.define({
+      curator: userSchema
+    });
+
+    const article1 = {
+      id: 1,
+      title: 'Some Article',
+      author: {
+        id: 1,
+        name: 'Dan'
+      },
+      collections: [{
+        id: 1,
+        name: 'Dan'
+      }, {
+        id: 2,
+        name: 'Giampaolo'
+      }]
+    };
+    const article2 = {
+      id: 2,
+      title: 'Other Article',
+      author: {
+        id: 1,
+        name: 'Dan'
+      }
+    };
+    const article3 = {
+      id: 3,
+      title: 'Without author',
+      author: null
+    };
+
+    const article4 = {
+      id: 4,
+      title: 'Some Article',
+      author: {
+        id: '',
+        name: 'Deleted'
+      },
+      collections: [{
+        id: '',
+        name: 'Deleted'
+      }]
+    };
+
+    const response = {
+      articles: [article1, article2, article3, article4]
+    };
+
+    const data = normalize(response, {
+      articles: arrayOf(articleSchema)
+    });
+
+
+    const expectedArticles = [
+      article1,
+      article2
+    ];
+
+    it("should return an array of entities", () => {
+      const articles = [
+        data.entities.articles["1"],
+        data.entities.articles["2"]
+      ];
+
+      expect(denormalize(articles, data.entities, arrayOf(articleSchema))).to.be.eql(expectedArticles);
+    });
+
+    it("should return an array of entities from list of ids", () => {
+      expect(denormalize([1, 2], data.entities, arrayOf(articleSchema))).to.be.eql(expectedArticles);
     });
 
   });
