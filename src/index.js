@@ -3,7 +3,7 @@ import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from 'lodash/merge';
 import isObject from 'lodash/isObject';
-import { isImmutable, getIn, setIn } from './immutable_helpers'
+import { isImmutable, getIn, setIn } from './ImmutableUtils'
 
 /**
  * Take either an entity or id and derive the other.
