@@ -1,3 +1,8 @@
+### [v0.3.0](https://github.com/gpbl/denormalizr/tree/v0.2.0) (2016-04-05)
+
+* Added support for immutable-js objects ([\#12](https://github.com/gpbl/denormalizr/pull/12)) - by [@jcarbo](https://github.com/jcarbo)
+* Denormalize arrays, ids, and arrays of ids ([\#13](https://github.com/gpbl/denormalizr/pull/13)) - by [@jcarbo](https://github.com/jcarbo)
+
 ### [v0.2.0](https://github.com/gpbl/denormalizr/tree/v0.2.0) (2016-04-05)
 
 * Denormalize nested, non-plain objects ([\#9](https://github.com/gpbl/denormalizr/pull/9)) - by [@cecigarcia](https://github.com/cecigarcia)
