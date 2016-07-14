@@ -16,7 +16,7 @@ function stringifiedArray(array) {
  * @return {bool}
  */
 export function isImmutable(object) {
-  return !!object.getIn
+  return object && !!object.getIn
 }
 
 /**
