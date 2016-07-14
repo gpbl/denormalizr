@@ -1,4 +1,8 @@
-### [v0.3.0](https://github.com/gpbl/denormalizr/tree/v0.2.0) (2016-04-05)
+### [v0.3.1](https://github.com/gpbl/denormalizr/tree/v0.3.1) (2016-07-15)
+
+* Fix when evaluating `undefined` objects ([\#15](https://github.com/gpbl/denormalizr/pull/15)) - by [@smilingpoplar](https://github.com/smilingpoplar)
+
+### [v0.3.0](https://github.com/gpbl/denormalizr/tree/v0.3.0) (2016-07-05)
 
 * Added support for immutable-js objects ([\#12](https://github.com/gpbl/denormalizr/pull/12)) - by [@jcarbo](https://github.com/jcarbo)
 * Denormalize arrays, ids, and arrays of ids ([\#13](https://github.com/gpbl/denormalizr/pull/13)) - by [@jcarbo](https://github.com/jcarbo)
