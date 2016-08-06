@@ -1,3 +1,7 @@
+### [v0.3.2](https://github.com/gpbl/denormalizr/tree/v0.3.2) (2016-08-06)
+
+* Accept lodash `v4` minor releases
+
 ### [v0.3.1](https://github.com/gpbl/denormalizr/tree/v0.3.1) (2016-07-15)
 
 * Fix when evaluating `undefined` objects ([\#15](https://github.com/gpbl/denormalizr/pull/15)) - by [@smilingpoplar](https://github.com/smilingpoplar)

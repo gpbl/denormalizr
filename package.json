@@ -1,6 +1,6 @@
 {
   "name": "denormalizr",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
   "scripts": {
@@ -41,6 +41,6 @@
     "normalizr": "^2.0.0"
   },
   "dependencies": {
-    "lodash": "4.13.1"
+    "lodash": "^4.0.0"
   }
 }
