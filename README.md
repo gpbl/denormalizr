@@ -24,6 +24,7 @@ const denormalized = denormalize(entity, entities, entitySchema);
 ```js
 import { denormalize } from "denormalizr";
 const articleSchema = new Schema('articles');
+const articleListSchema = arrayOf(articleSchema);
 const userSchema = new Schema('users');
 
 articleSchema.define({
@@ -49,7 +50,7 @@ const response = {
 };
 
 const normalized = normalize(response, {
-  articles: arrayOf(articleSchema)
+  articles: articleListSchema
 });
 
 const article = normalized.entities.articles[0];
@@ -72,7 +73,7 @@ console.log(denormalized);
 // }
 
 // Denormalize a list
-const denormalized = denormalize([article], normalized.entities, articleSchema);
+const denormalized = denormalize([article], normalized.entities, articleListSchema);
 console.log(denormalized);
 // [{
 //   id: 1,
@@ -96,7 +97,7 @@ console.log(denormalized);
 // }
 
 // Denormalize by passing a list of IDs
-const denormalized = denormalize([1], normalized.entities, articleSchema);
+const denormalized = denormalize([1], normalized.entities, articleListSchema);
 console.log(denormalized);
 // [{
 //   id: 1,
