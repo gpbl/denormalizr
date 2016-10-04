@@ -5,7 +5,7 @@ import reduce from 'lodash/reduce';
  */
 
 function stringifiedArray(array) {
-  return array.map((item) => item && item.toString())
+  return array.map(item => item && item.toString());
 }
 
 /**
@@ -16,7 +16,7 @@ function stringifiedArray(array) {
  * @return {bool}
  */
 export function isImmutable(object) {
-  return object && !!object.getIn
+  return object && !!object.getIn;
 }
 
 /**
@@ -27,16 +27,16 @@ export function isImmutable(object) {
  * @param  {Array<string, number>} keyPath
  * @return {any}
  */
-export function getIn (object, keyPath) {
+export function getIn(object, keyPath) {
   if (object.getIn) {
-    return object.getIn(stringifiedArray(keyPath))
+    return object.getIn(stringifiedArray(keyPath));
   }
 
   return reduce(
     keyPath,
     (memo, key) => memo[key],
     object
-  )
+  );
 }
 
 /**
@@ -48,15 +48,15 @@ export function getIn (object, keyPath) {
  * @param  {any} value
  * @return {any}
  */
-export function setIn (object, keyPath, value) {
+export function setIn(object, keyPath, value) {
   if (object.setIn) {
-    return object.setIn(stringifiedArray(keyPath), value)
+    return object.setIn(stringifiedArray(keyPath), value);
   }
 
-  const lastKey = keyPath.pop()
-  const location = getIn(object, keyPath)
+  const lastKey = keyPath.pop();
+  const location = getIn(object, keyPath);
 
-  location[lastKey] = value
+  location[lastKey] = value;
 
-  return object
+  return object;
 }
