@@ -3,7 +3,7 @@ import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from 'lodash/merge';
 import isObject from 'lodash/isObject';
-import { isImmutable, getIn, setIn } from './ImmutableUtils'
+import { isImmutable, getIn, setIn } from './ImmutableUtils';
 
 /**
  * Take either an entity or id and derive the other.
@@ -16,16 +16,16 @@ import { isImmutable, getIn, setIn } from './ImmutableUtils'
 function resolveEntityOrId(entityOrId, entities, schema) {
   const key = schema.getKey();
 
-  let entity = entityOrId
-  let id = entityOrId
+  let entity = entityOrId;
+  let id = entityOrId;
 
   if (isObject(entityOrId)) {
-    id = getIn(entity, [schema.getIdAttribute()])
+    id = getIn(entity, [schema.getIdAttribute()]);
   } else {
-    entity = getIn(entities, [key, id])
+    entity = getIn(entities, [key, id]);
   }
 
-  return { entity, id }
+  return { entity, id };
 }
 
 /**
@@ -74,13 +74,12 @@ function denormalizeUnion(entity, entities, schema, bag) {
  * @returns {object|Immutable.Map}
  */
 function denormalizeObject(obj, entities, schema, bag) {
-  let denormalized = obj
+  let denormalized = obj;
 
   Object.keys(schema)
     .filter(attribute => attribute.substring(0, 1) !== '_')
     .filter(attribute => typeof getIn(obj, [attribute]) !== 'undefined')
-    .forEach(attribute => {
-
+    .forEach((attribute) => {
       const item = getIn(obj, [attribute]);
       const itemSchema = getIn(schema, [attribute]);
 
@@ -102,15 +101,15 @@ function denormalizeObject(obj, entities, schema, bag) {
  */
 function denormalizeEntity(entityOrId, entities, schema, bag) {
   const key = schema.getKey();
-  const { entity, id} = resolveEntityOrId(entityOrId, entities, schema)
+  const { entity, id } = resolveEntityOrId(entityOrId, entities, schema);
 
-  if(!bag.hasOwnProperty(key)) {
+  if (!bag.hasOwnProperty(key)) {
     bag[key] = {};
   }
 
-  if(!bag[key].hasOwnProperty(id)) {
+  if (!bag[key].hasOwnProperty(id)) {
     // Ensure we don't mutate it non-immutable objects
-    const obj = isImmutable(entity) ? entity : merge({}, entity)
+    const obj = isImmutable(entity) ? entity : merge({}, entity);
 
     // Need to set this first so that if it is referenced within the call to
     // denormalizeObject, it will already exist.
@@ -146,9 +145,8 @@ export function denormalize(obj, entities, schema, bag = {}) {
     return denormalizeIterable(obj, entities, schema, bag);
   } else if (schema instanceof UnionSchema) {
     return denormalizeUnion(obj, entities, schema, bag);
-  } else {
-    // Ensure we don't mutate it non-immutable objects
-    const entity = isImmutable(obj) ? obj : merge({}, obj)
-    return denormalizeObject(entity, entities, schema, bag);
   }
+  // Ensure we don't mutate it non-immutable objects
+  const entity = isImmutable(obj) ? obj : merge({}, obj);
+  return denormalizeObject(entity, entities, schema, bag);
 }
