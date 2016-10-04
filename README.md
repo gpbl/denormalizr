@@ -8,7 +8,7 @@ This module is useful when consuming normalized data, e.g. redux [selectors](htt
 [![npm downloads](https://img.shields.io/npm/dm/denormalizr.svg?style=flat-square)](https://www.npmjs.com/package/denormalizr)
 [![build status](https://img.shields.io/travis/gpbl/denormalizr/master.svg?style=flat-square)](https://travis-ci.org/gpbl/denormalizr) 
 [![Code Climate](https://img.shields.io/codeclimate/github/gpbl/denormalizr.svg?style=flat-square)](https://codeclimate.com/github/gpbl/denormalizr) 
-[![Coveralls](https://img.shields.io/coveralls/gpbl/denormalizr.svg?style=flat-square&maxAge=2592000)](https://coveralls.io/github/gpbl/denormalizr)
+[![Coveralls](https://img.shields.io/coveralls/gpbl/denormalizr.svg?style=flat-square)](https://coveralls.io/github/gpbl/denormalizr)
 
 ## Installation
 
