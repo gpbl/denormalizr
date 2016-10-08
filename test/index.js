@@ -148,49 +148,103 @@ describe('denormalize', () => {
   });
 
   describe('parsing union schemas', () => {
-    const postSchema = new Schema('posts');
-    const userSchema = new Schema('users');
+    describe('when a schema', () => {
+      const postSchema = new Schema('posts');
+      const userSchema = new Schema('users');
 
-    postSchema.define({
-      user: userSchema,
+      postSchema.define({
+        user: userSchema,
+      });
+
+      const unionItemSchema = unionOf({
+        post: postSchema,
+        user: userSchema,
+      }, { schemaAttribute: 'type' });
+
+      const response = {
+        unionItems: [
+          {
+            id: 1,
+            title: 'Some Post',
+            user: {
+              id: 1,
+              name: 'Dan',
+            },
+            type: 'post',
+          },
+          {
+            id: 2,
+            name: 'Ashley',
+            type: 'user',
+          },
+          {
+            id: 2,
+            title: 'Other Post',
+            type: 'post',
+          },
+        ],
+      };
+
+      const data = normalize(response.unionItems, arrayOf(unionItemSchema));
+
+      it('should return the original response', () => {
+        const denormalized = data.result.map(item =>
+          denormalize(item, data.entities, unionItemSchema)
+        );
+        expect(denormalized).to.be.deep.eql(response.unionItems);
+      });
     });
 
-    const unionItemSchema = unionOf({
-      post: postSchema,
-      user: userSchema,
-    }, { schemaAttribute: 'type' });
+    describe('when defining a relationship', () => {
+      const groupSchema = new Schema('groups');
+      const userSchema = new Schema('users');
 
-    const response = {
-      unionItems: [
-        {
-          id: 1,
-          title: 'Some Post',
-          user: {
+      const member = unionOf({
+        users: userSchema,
+        groups: groupSchema,
+      }, { schemaAttribute: 'type' });
+
+      groupSchema.define({
+        owner: member,
+      });
+
+      const response = {
+        groups: [
+          {
             id: 1,
-            name: 'Dan',
+            owner: {
+              id: 1,
+              type: 'user',
+              name: 'Dan',
+            },
           },
-          type: 'post',
-        },
-        {
-          id: 2,
-          name: 'Ashley',
-          type: 'user',
-        },
-        {
-          id: 2,
-          title: 'Other Post',
-          type: 'post',
-        },
-      ],
-    };
+          {
+            id: 2,
+            owner: {
+              id: 2,
+              type: 'user',
+              name: 'Alice',
+            },
+          },
+          {
+            id: 3,
+            owner: {
+              id: 1,
+              type: 'group',
+              name: 'Teaching',
+            },
+          },
+        ],
+      };
 
-    const data = normalize(response.unionItems, arrayOf(unionItemSchema));
+      const data = normalize(response.groups, arrayOf(groupSchema));
 
-    it('should return the original response', () => {
-      const denormalized = data.result.map(item =>
-        denormalize(item, data.entities, unionItemSchema)
-      );
-      expect(denormalized).to.be.deep.eql(response.unionItems);
+      it('should return the original response', () => {
+        const denormalized = data.result.map(item =>
+          denormalize(item, data.entities, groupSchema)
+        );
+        expect(denormalized).to.be.deep.eql(response.groups);
+      });
     });
   });
 
