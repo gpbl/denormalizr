@@ -12,8 +12,8 @@ function stringifiedArray(array) {
  * To avoid including immutable-js as a dependency, check if an object is
  * immutable by checking if it implements the getIn method.
  *
- * @param  {any} object
- * @return {bool}
+ * @param  {Any} object
+ * @return {Boolean}
  */
 export function isImmutable(object) {
   return object && !!object.getIn;
@@ -25,7 +25,7 @@ export function isImmutable(object) {
  *
  * @param  {Object, Immutable.Map, Immutable.Record} object
  * @param  {Array<string, number>} keyPath
- * @return {any}
+ * @return {Any}
  */
 export function getIn(object, keyPath) {
   if (object.getIn) {
@@ -45,8 +45,8 @@ export function getIn(object, keyPath) {
  *
  * @param  {Object, Immutable.Map, Immutable.Record} object
  * @param  {Array<string, number>} keyPath
- * @param  {any} value
- * @return {any}
+ * @param  {Any} value
+ * @return {Any}
  */
 export function setIn(object, keyPath, value) {
   if (object.setIn) {
@@ -62,15 +62,16 @@ export function setIn(object, keyPath, value) {
 }
 
 /**
- * Moves the union to a property with the appropriate schema name
+ * Moves the union to a property with the appropriate schema name.
  *
  * @param  {Object, Immutable.Map, Immutable.Record} object
- * @return {any}
+ * @return {Any}
  */
 export function moveUnionToSchema(entity) {
   if (isImmutable(entity)) {
-    // can't use entity.set(...) to do this in case of an Immutable.Record
-    return { [entity.get('schema')]: entity.get('id') };
+    return {
+      [entity.get('schema')]: entity.get('id'),
+    };
   }
 
   return Object.assign({}, entity, { [entity.schema]: entity.id });
