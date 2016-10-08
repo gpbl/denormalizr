@@ -3,7 +3,7 @@ import EntitySchema from 'normalizr/lib/EntitySchema';
 import UnionSchema from 'normalizr/lib/UnionSchema';
 import merge from 'lodash/merge';
 import isObject from 'lodash/isObject';
-import { isImmutable, getIn, setIn } from './ImmutableUtils';
+import { isImmutable, getIn, setIn, moveUnionToSchema } from './ImmutableUtils';
 
 /**
  * Take either an entity or id and derive the other.
@@ -52,12 +52,13 @@ function denormalizeIterable(items, entities, schema, bag) {
  */
 function denormalizeUnion(entity, entities, schema, bag) {
   const itemSchema = schema.getItemSchema();
-  return denormalize(
-    Object.assign({}, entity, { [entity.schema]: entity.id }),
+  const denormalized = denormalize(
+    moveUnionToSchema(entity),
     entities,
     itemSchema,
     bag
-  )[entity.schema];
+  );
+  return getIn(denormalized, [isImmutable(entity) ? entity.get('schema') : entity.schema]);
 }
 
 /**
