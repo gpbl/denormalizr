@@ -59,8 +59,8 @@ The denormalized object (or Immutable.Map), or an array of denormalized objects 
 
 ## Examples
 
-Let say we have a JSON response from a REST API consisting in an list of articles,
-each with an `author` field.
+For the following examples, consider to have a JSON response from a REST API consisting in a list of articles,
+where each article has a `author` field.
 
 ```json
 {
@@ -82,7 +82,7 @@ each with an `author` field.
 }
 ```
 
-To normalize this response, we define an `articleSchema` and an `authorSchema`:
+To normalize this response with normalizr, we can define two Schemas: `articleSchema` and `authorSchema`.
 
 ```js
 import { normalize, arrayOf, Schema } from 'normalizr';
@@ -100,7 +100,7 @@ const normalized = normalize(response, {
 })
 ```
 
-Now we have the usual normalized object with entities:
+This way we have the usual normalized object with entities:
 
 ```js
 // content of normalized
@@ -121,10 +121,9 @@ Now we have the usual normalized object with entities:
   result: { articles: [ 1, 2 ] } }
 ```
 
-Let say we want now display in our user interface the articles with id `1` and `2`, 
-and for each article its author. 
+Let say we want to display the articles with ids `1` and `2`, and for each article its author. 
 
-In order to get the whole author object for each article, we need to loop over them and get the author object: 
+In order to get the whole author object for each article, we need to loop over the author entities: 
 
 ```js
 const articleIds = [1, 2];
@@ -134,8 +133,9 @@ const articles = articleIds.map(id => {
 })
 ```
 
-we are basically reverting to the original JSON response. We are, indeed, *denormalizing*: 
-without the need to know an entity's schema, denormalizr takes few parameters to make this work for us:
+We are basically reverting to the original JSON response. We are, indeed, *denormalizing*. 
+
+Without the need to know the entity's shapes, we can use denormalizr to simplify this process. Thus:
 
 ```js
 import { denormalize } from 'denormalizr';
@@ -154,6 +154,11 @@ const articles = denormalize([1,2], normalized.entities, articleList);
     title: 'You won\'t believe what this high order component is doing',
     author: { id: 1, name: 'Dan' } } ]
 ```
+
+`denormalize()` accepts as first parameter the **entity** we want to denormalize, which can be a 
+single object, an array of object, a single id or an array of ids.
+The second parameter is the whole **entities** object, which is consumed when the **entity schema** (third
+parameter) has references to one or more entities.
 
 ### Denormalize a single object
 
