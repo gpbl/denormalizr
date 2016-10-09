@@ -1,6 +1,6 @@
-<div style="text-align: center">
-    <img src="https://cloud.githubusercontent.com/assets/120693/19218826/36eb41c2-8e04-11e6-98a5-2fdad6ca45fe.png" width="444" height="95">
-</div>
+<p align="center">
+    <img style="margin: 0 auto" src="https://cloud.githubusercontent.com/assets/120693/19218826/36eb41c2-8e04-11e6-98a5-2fdad6ca45fe.png" width="444" height="95">
+</p>
 
 **denormalizr** takes data and entities normalized by [normalizr](https://github.com/gaearon/normalizr), and returns its complete tree – including nested entities.
 
