@@ -1,3 +1,7 @@
+### [v0.3.4](https://github.com/gpbl/denormalizr/tree/v0.3.4) (2016-10-09)
+
+* Update package.json to include only relevant files when installing via npm
+
 ### [v0.3.3](https://github.com/gpbl/denormalizr/tree/v0.3.3) (2016-10-08)
 
 * Fix an issue with `unionOf` when using Immutable objects ([\#23](https://github.com/gpbl/denormalizr/pull/23)) - by [@DEfusion](https://github.com/DEfusion)
