@@ -1,8 +1,11 @@
-# denormalizr
+<div style="text-align: center">
+    <img src="https://cloud.githubusercontent.com/assets/120693/19218826/36eb41c2-8e04-11e6-98a5-2fdad6ca45fe.png" width="444" height="95">
+</div>
 
-Denormalizr takes an entity normalized by [normalizr](https://github.com/gaearon/normalizr), and returns its complete tree including all the referred entities.
+**denormalizr** takes data and entities normalized by [normalizr](https://github.com/gaearon/normalizr), and returns its complete tree – including nested entities.
 
-This module is useful when consuming normalized data, e.g. redux [selectors](http://redux.js.org/docs/recipes/ComputingDerivedData.html). While normalizr is great on making data consistent between the app, reassembling an entity can be a tedious work. Denormalizr can help!
+This module is useful when consuming normalized data, e.g. in redux [selectors](http://redux.js.org/docs/recipes/ComputingDerivedData.html). While normalizr is great on making data consistent between the app, reassembling entities can be a tedious work. Denormalizr can help!
+
 
 [![npm version](https://img.shields.io/npm/v/denormalizr.svg?style=flat-square)](https://www.npmjs.com/package/denormalizr)
 [![npm downloads](https://img.shields.io/npm/dm/denormalizr.svg?style=flat-square)](https://www.npmjs.com/package/denormalizr)
@@ -10,125 +13,287 @@ This module is useful when consuming normalized data, e.g. redux [selectors](htt
 [![Code Climate](https://img.shields.io/codeclimate/github/gpbl/denormalizr.svg?style=flat-square)](https://codeclimate.com/github/gpbl/denormalizr) 
 [![Coveralls](https://img.shields.io/coveralls/gpbl/denormalizr.svg?style=flat-square)](https://coveralls.io/github/gpbl/denormalizr)
 
-## Installation
-
 ```
 npm install denormalizr --save
 ```
-
-## Usage
 
 ```js
 import { denormalize } from "denormalizr";
 const denormalized = denormalize(entity, entities, entitySchema);
 ```
 
-### Example
+### Documentation 
 
-```js
-import { denormalize } from "denormalizr";
-const articleSchema = new Schema('articles');
-const articleListSchema = arrayOf(articleSchema);
-const userSchema = new Schema('users');
+* [API](#api)
+* [Examples](#examples)
+  * [Denormalize a single object](#denormalize-a-single-object)
+  * [Denormalize a list of objects](#denormalize-a-list-of-objects)
+  * [Denormalize by passing the id](#denormalize-by-passing-the-id)
+  * [Denormalize by passing a list of ids](#denormalize-by-passing-a-list-of-ids)
+  * [Recursive schemas](#recursive-schemas)
+* [Usage with Immutable](#usage-with-immutable)
 
-articleSchema.define({
-  author: userSchema
-});
+## API
 
-const response = {
-  articles: [{
-    id: 1,
-    title: 'Some Article',
-    author: {
-      id: 1,
-      name: 'Dan'
+```
+denormalize (entity, entities, schema) -> Object|Array|Immutable.Map|Immutable.List
+```
+
+### Params 
+
+**entity** `{Object|Array|Number|String|Immutable.Map|Immutable.List}` 
+
+> The entity to denormalize, its id, or an array of entities or ids.
+
+**entities** `{Object|Immutable.Map}` 
+
+> An object to entities used to denormalize entity and its referred entities.
+
+**entitySchema** `{Schema}`
+
+> The normalizr Schema used to define `entity`.
+
+### Returns
+
+The denormalized object (or Immutable.Map), or an array of denormalized objects (or an Immutable.List).
+
+## Examples
+
+Let say we have a JSON response from a REST API consisting in an list of articles,
+each with an `author` field.
+
+```json
+{
+  "articles": [{
+    "id": 1,
+    "title": "10 mindblowing reasons to prefer composition over inheritance",
+    "author": {
+      "id": 1,
+      "name": "Dan"
     },
   }, {
-    id: 2,
-    title: 'Other Article',
-    author: {
-      id: 1,
-      name: 'Dan'
+    "id": 2,
+    "title": "You won't believe what this high order component is doing",
+    "author": {
+      "id": 1,
+      "name": "Dan"
     }
   }]
-};
+}
+```
 
-const normalized = normalize(response, {
-  articles: articleListSchema
+To normalize this response, we define an `articleSchema` and an `authorSchema`:
+
+```js
+import { normalize, arrayOf, Schema } from 'normalizr';
+
+const articleSchema = new Schema('articles');
+const authorSchema = new Schema('authors');
+const articleList = arrayOf(articleSchema);
+
+articleSchema.define({
+  author: authorSchema,
 });
 
-const article = normalized.entities.articles[0];
-console.log(article);
-// {
-//   id: 1,
-//   title: 'Some Article',
-//   author: '1'
-// }
+const normalized = normalize(response, {
+  articles: articleList,
+})
+```
 
+Now we have the usual normalized object with entities:
+
+```js
+// content of normalized
+{ entities: 
+   { articles: 
+      { '1': 
+         { id: 1,
+           title: '10 mindblowing reasons to prefer composition over inheritance',
+           author: 1 },
+        '2': 
+         { id: 2,
+           title: 'You won\'t believe what this high order component is doing',
+           author: 1 } },
+     authors: 
+      { '1': 
+         { id: 1, 
+          name: 'Dan' } } },
+  result: { articles: [ 1, 2 ] } }
+```
+
+Let say we want now display in our user interface the articles with id `1` and `2`, 
+and for each article its author. 
+
+In order to get the whole author object for each article, we need to loop over them and get the author object: 
+
+```js
+const articleIds = [1, 2];
+const articles = articleIds.map(id => {
+  const article = normalized.entities.articles[id];
+  article.author = normalized.entities.authors[article.author];
+})
+```
+
+we are basically reverting to the original JSON response. We are, indeed, *denormalizing*: 
+without the need to know an entity's schema, denormalizr takes few parameters to make this work for us:
+
+```js
+import { denormalize } from 'denormalizr';
+
+const articles = denormalize([1,2], normalized.entities, articleList);
+```
+
+`articles` contains now the selected articles with the authors in them:
+
+```js
+// console.log(articles)
+[ { id: 1,
+    title: '10 mindblowing reasons to prefer composition over inheritance',
+    author: { id: 1, name: 'Dan' } },
+  { id: 2,
+    title: 'You won\'t believe what this high order component is doing',
+    author: { id: 1, name: 'Dan' } } ]
+```
+
+### Denormalize a single object
+
+```js
+const article = normalized.entities.articles['1'];
 const denormalized = denormalize(article, normalized.entities, articleSchema);
-console.log(denormalized);
-// {
-//   id: 1,
-//   title: 'Some Article',
-//   author: {
-//     id: 1,
-//     name: 'Dan'
-//   },
-// }
+```
+```js
+// console.log(denormalized)
+{
+  id: 1,
+  title: 'Some Article',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+}
+```
+### Denormalize a list of objects
 
-// Denormalize a list
-const denormalized = denormalize([article], normalized.entities, articleListSchema);
-console.log(denormalized);
-// [{
-//   id: 1,
-//   title: 'Some Article',
-//   author: {
-//     id: 1,
-//     name: 'Dan'
-//   },
-// }]
+```js
+const article1 = normalized.entities.articles['1'];
+const article2 = normalized.entities.articles['2'];
 
-// Denormalize by passing just the ID
+const denormalized = denormalize([article1, article2], normalized.entities, articleListSchema);
+```
+
+```js
+// console.log(denormalized)
+[{
+  id: 1,
+  title: '10 mindblowing reasons to prefer composition over inheritance',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+},{
+  id: 2,
+  title: 'You won\'t believe what this high order component is doing',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+}]
+```
+
+### Denormalize by passing the id
+
+```js
 const denormalized = denormalize(1, normalized.entities, articleSchema);
-console.log(denormalized);
-// {
-//   id: 1,
-//   title: 'Some Article',
-//   author: {
-//     id: 1,
-//     name: 'Dan'
-//   },
-// }
+```
 
-// Denormalize by passing a list of IDs
-const denormalized = denormalize([1], normalized.entities, articleListSchema);
-console.log(denormalized);
-// [{
-//   id: 1,
-//   title: 'Some Article',
-//   author: {
-//     id: 1,
-//     name: 'Dan'
-//   },
-// }]
+```js
+// console.log(denormalized);
+{
+  id: 1,
+  title: '10 mindblowing reasons to prefer composition over inheritance',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+}
+```
+
+### Denormalize by passing a list of ids
+
+```js
+const denormalized = denormalize([1, 2], normalized.entities, articleListSchema);
+```
+
+```js
+// console.log(denormalized)
+[{
+  id: 1,
+  title: '10 mindblowing reasons to prefer composition over inheritance',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+},{
+  id: 2,
+  title: 'You won\'t believe what this high order component is doing',
+  author: {
+    id: 1,
+    name: 'Dan'
+  },
+}]
+```
+
+### Recursive schemas
+
+Denormalizr can handle circular references caused by recursive schemas (see [#2](https://github.com/gpbl/denormalizr/pull/2)). 
+
+For example, take these schemas, where articles have an author property containing a list of articles: 
+
+```js
+const articleSchema = new Schema('articles');
+const authorSchema = new Schema('author');
+const articleList = arrayOf(articleSchema);
+
+articleSchema.define({
+  author: authorSchema,
+});
+
+authorSchema.define({
+  articles: articleList,
+});
+
+const JSONResponse = {
+  "articles": [{
+    "id": 2,
+    "title": "You won\'t believe what this high order component is doing",
+    "author": {
+      "id": 1,
+      "name": 'Dan',
+      "articles": [2],
+    },
+  }],
+};
+
+const normalized = normalize(JSONResponse, {
+  articles: articleList,
+});
+
+const article = data.entities.articles['2'];
+const denormalized = denormalize(article, data.entities, articleSchema);
+
+console.log(denormalized.author.articles[0] === denormalized)); // true
 
 ```
 
 ## Usage with Immutable
 
-This package works with immutable-js, however there's a slight difference in how circular references are handled:
+Denormalizr works well with [immutable-js](https://facebook.github.io/immutable-js/), however recursive schemas are [not supported](https://github.com/facebook/immutable-js/issues/259):
 
-- When using non-immutable data structures, circular references are fully supported (see: https://github.com/gpbl/denormalizr/pull/2). So:
-```javascript
-// The nested article contains a complete reference back to the `denormalized.author` object
-denormalized.author.articles[0].author === denormalized.author.articles[0].author.articles[0].author
-```
-- Circular references is something that immutable-js does not support (and [does not plan to support](https://github.com/facebook/immutable-js/issues/259)). When a circular reference is reached, the non-denormalized copy is returned. So:
-So:
-```javascript
-// The nested article only contains a reference to the author by ID
+```js
+// This nested article contains only a reference to the author's id:
 denormalized.author.articles[0].author === 1
 ```
 
 Related work:
+
 * [denormalizr-immutable](https://github.com/dehbmarques/denormalizr-immutable).
