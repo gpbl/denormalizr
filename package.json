@@ -1,8 +1,11 @@
 {
   "name": "denormalizr",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "cover": "babel-node ./node_modules/istanbul/lib/cli cover -- _mocha --recursive --reporter spec",
     "prebuild": "rimraf dist lib",
