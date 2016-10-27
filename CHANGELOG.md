@@ -1,3 +1,7 @@
+### [v0.3.5](https://github.com/gpbl/denormalizr/tree/v0.3.5) (2016-10-27)
+
+* Accept wider range of lodash versions ([\#29](https://github.com/gpbl/denormalizr/pull/29)) - by [@just-boris](https://github.com/just-boris)
+
 ### [v0.3.4](https://github.com/gpbl/denormalizr/tree/v0.3.4) (2016-10-09)
 
 * Update package.json to include only relevant files when installing via npm

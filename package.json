@@ -1,6 +1,6 @@
 {
   "name": "denormalizr",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
   "files": [
