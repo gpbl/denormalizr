@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import { normalize, Schema, arrayOf, unionOf } from 'normalizr';
+import { normalize, Schema, arrayOf, valuesOf, unionOf } from 'normalizr';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { denormalize } from '../src';
@@ -425,6 +425,66 @@ describe('denormalize', () => {
     });
 
     it('should return an array of entities from list of ids', () => {
+      const denormalized = denormalize([1, 2], data.entities, arrayOf(articleSchema));
+      expect(denormalized).to.be.eql(expectedArticles);
+    });
+  });
+
+  describe('parsing a map of entities and collections', () => {
+    const articleSchema = new Schema('articles');
+    const userSchema = new Schema('users');
+    const collectionSchema = new Schema('collections');
+
+    articleSchema.define({
+      collections: valuesOf(collectionSchema),
+    });
+
+    collectionSchema.define({
+      curator: userSchema,
+    });
+
+    const article1 = {
+      id: 1,
+      title: 'Some Article',
+      collections: {
+        1: {
+          id: 1,
+          name: 'Dan',
+        },
+        2: {
+          id: 2,
+          name: 'Giampaolo',
+        },
+      },
+    };
+    const article2 = {
+      id: 2,
+      title: 'Other Article',
+    };
+
+    const response = {
+      articles: [article1, article2],
+    };
+
+    const data = normalize(response, {
+      articles: arrayOf(articleSchema),
+    });
+
+    const expectedArticles = [
+      article1,
+      article2,
+    ];
+
+    it('should return an array of denormaized entities given an array of normalized entities', () => {
+      const articles = [
+        data.entities.articles['1'],
+        data.entities.articles['2'],
+      ];
+      const denormalized = denormalize(articles, data.entities, arrayOf(articleSchema));
+      expect(denormalized).to.be.eql(expectedArticles);
+    });
+
+    it('should return an array of denormaized entities given an array of ids', () => {
       const denormalized = denormalize([1, 2], data.entities, arrayOf(articleSchema));
       expect(denormalized).to.be.eql(expectedArticles);
     });

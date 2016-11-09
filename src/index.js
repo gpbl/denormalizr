@@ -39,8 +39,19 @@ function resolveEntityOrId(entityOrId, entities, schema) {
  */
 function denormalizeIterable(items, entities, schema, bag) {
   const itemSchema = schema.getItemSchema();
+  const isMappable = typeof items.map === 'function';
 
-  return items.map(o => denormalize(o, entities, itemSchema, bag));
+  // Handle arrayOf iterables
+  if (isMappable) {
+    return items.map(o => denormalize(o, entities, itemSchema, bag));
+  }
+
+  // Handle valuesOf iterables
+  const denormalized = {};
+  Object.keys(items).forEach((key) => {
+    denormalized[key] = denormalize(items[key], entities, itemSchema, bag);
+  });
+  return denormalized;
 }
 
 /**

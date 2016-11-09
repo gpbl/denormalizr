@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import chai, { expect } from 'chai';
-import { normalize, Schema, arrayOf, unionOf } from 'normalizr';
+import { normalize, Schema, arrayOf, valuesOf, unionOf } from 'normalizr';
 import { fromJS } from 'immutable';
 import cloneDeep from 'lodash/cloneDeep';
 import chaiImmutable from 'chai-immutable';
@@ -434,6 +434,67 @@ describe('(Immutable) denormalize', () => {
     });
 
     it('should return an array of entities', () => {
+      const denormalized = denormalize(fromJS([1, 2]), data.entities, arrayOf(articleSchema));
+      expect(denormalized).to.be.eql(expectedArticles);
+    });
+  });
+
+  describe('parsing an array of entities and collections', () => {
+    const articleSchema = new Schema('articles');
+    const userSchema = new Schema('users');
+    const collectionSchema = new Schema('collections');
+
+    articleSchema.define({
+      collections: valuesOf(collectionSchema),
+    });
+
+    collectionSchema.define({
+      curator: userSchema,
+    });
+
+    const article1 = {
+      id: 1,
+      title: 'Some Article',
+      collections: {
+        1: {
+          id: 1,
+          name: 'Dan',
+        },
+        2: {
+          id: 2,
+          name: 'Giampaolo',
+        },
+      },
+    };
+
+    const article2 = {
+      id: 2,
+      title: 'Other Article',
+    };
+
+    const response = {
+      articles: [article1, article2],
+    };
+
+    const data = immutableNormalize(response, {
+      articles: arrayOf(articleSchema),
+    });
+
+    const expectedArticles = fromJS([
+      article1,
+      article2,
+    ]);
+
+    it('should return an array of denormaized entities given an array of normalized entities', () => {
+      const articles = fromJS([
+        data.entities.getIn(['articles', '1']),
+        data.entities.getIn(['articles', '2']),
+      ]);
+      const denormalized = denormalize(articles, data.entities, arrayOf(articleSchema));
+      expect(denormalized).to.be.eql(expectedArticles);
+    });
+
+    it('should return an array of denormaized entities given an array of ids', () => {
       const denormalized = denormalize(fromJS([1, 2]), data.entities, arrayOf(articleSchema));
       expect(denormalized).to.be.eql(expectedArticles);
     });
