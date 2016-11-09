@@ -1,3 +1,7 @@
+### [v0.4.0](https://github.com/gpbl/denormalizr/tree/v0.4.0) (2016-11-09)
+
+* Add support for `valuesOf` ([\#31](https://github.com/gpbl/denormalizr/pull/31)) - by [@pierscowburn](https://github.com/pierscowburn)
+
 ### [v0.3.5](https://github.com/gpbl/denormalizr/tree/v0.3.5) (2016-10-27)
 
 * Accept wider range of lodash versions ([\#29](https://github.com/gpbl/denormalizr/pull/29)) - by [@just-boris](https://github.com/just-boris)
