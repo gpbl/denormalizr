@@ -32,6 +32,7 @@ const denormalized = denormalize(entity, entities, entitySchema);
   * [Denormalize by passing a list of ids](#denormalize-by-passing-a-list-of-ids)
   * [Recursive schemas](#recursive-schemas)
 * [Usage with Immutable](#usage-with-immutable)
+* [Changelog](CHANGELOG.md)
 
 ## API
 
