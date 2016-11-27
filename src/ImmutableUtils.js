@@ -35,7 +35,7 @@ export function getIn(object, keyPath) {
   return reduce(
     keyPath,
     (memo, key) => memo[key],
-    object
+    object,
   );
 }
 

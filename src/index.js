@@ -67,7 +67,7 @@ function denormalizeUnion(entity, entities, schema, bag) {
     moveUnionToSchema(entity),
     entities,
     itemSchema,
-    bag
+    bag,
   );
   return getIn(denormalized, [isImmutable(entity) ? entity.get('schema') : entity.schema]);
 }
