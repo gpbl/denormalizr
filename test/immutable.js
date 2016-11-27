@@ -203,7 +203,7 @@ describe('(Immutable) denormalize', () => {
 
       it('should return the original response', () => {
         const denormalized = data.result.map(item =>
-          denormalize(item, data.entities, unionItemSchema)
+          denormalize(item, data.entities, unionItemSchema),
         );
         expect(fromJS(denormalized)).to.be.eql(fromJS(response.unionItems));
       });
@@ -255,7 +255,7 @@ describe('(Immutable) denormalize', () => {
 
       it('should return the original response', () => {
         const denormalized = data.result.map(item =>
-          denormalize(item, data.entities, groupSchema)
+          denormalize(item, data.entities, groupSchema),
         );
         expect(fromJS(denormalized)).to.be.deep.eql(fromJS(response.groups));
       });

@@ -189,7 +189,7 @@ describe('denormalize', () => {
 
       it('should return the original response', () => {
         const denormalized = data.result.map(item =>
-          denormalize(item, data.entities, unionItemSchema)
+          denormalize(item, data.entities, unionItemSchema),
         );
         expect(denormalized).to.be.deep.eql(response.unionItems);
       });
@@ -241,7 +241,7 @@ describe('denormalize', () => {
 
       it('should return the original response', () => {
         const denormalized = data.result.map(item =>
-          denormalize(item, data.entities, groupSchema)
+          denormalize(item, data.entities, groupSchema),
         );
         expect(denormalized).to.be.deep.eql(response.groups);
       });
@@ -289,7 +289,7 @@ describe('denormalize', () => {
 
     it('should denormalize nested non entity objects', () => {
       const denormalized = data.result.map(id =>
-        denormalize(data.entities.article[id], data.entities, articleSchema)
+        denormalize(data.entities.article[id], data.entities, articleSchema),
       );
       expect(denormalized).to.be.deep.eql(response.articles);
     });
@@ -339,7 +339,7 @@ describe('denormalize', () => {
 
     it('should denormalize nested non entity objects recursively', () => {
       const denormalized = data.result.map(id =>
-        denormalize(data.entities.article[id], data.entities, articleSchema)
+        denormalize(data.entities.article[id], data.entities, articleSchema),
       );
       expect(denormalized).to.be.deep.eql(response.articles);
     });
