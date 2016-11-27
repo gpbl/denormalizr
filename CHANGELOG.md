@@ -1,3 +1,7 @@
+### [v0.4.1](https://github.com/gpbl/denormalizr/tree/v0.4.1) (2016-11-27)
+
+* Move `normalizr` to dependencies from peer dependencies ([\#32](https://github.com/gpbl/denormalizr/pull/32))
+
 ### [v0.4.0](https://github.com/gpbl/denormalizr/tree/v0.4.0) (2016-11-09)
 
 * Add support for `valuesOf` ([\#31](https://github.com/gpbl/denormalizr/pull/31)) - by [@pierscowburn](https://github.com/pierscowburn)
