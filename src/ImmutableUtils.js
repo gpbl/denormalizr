@@ -60,19 +60,3 @@ export function setIn(object, keyPath, value) {
 
   return object;
 }
-
-/**
- * Moves the union to a property with the appropriate schema name.
- *
- * @param  {Object, Immutable.Map, Immutable.Record} object
- * @return {Any}
- */
-export function moveUnionToSchema(entity) {
-  if (isImmutable(entity)) {
-    return {
-      [entity.get('schema')]: entity.get('id'),
-    };
-  }
-
-  return Object.assign({}, entity, { [entity.schema]: entity.id });
-}

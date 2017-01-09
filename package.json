@@ -1,6 +1,6 @@
 {
   "name": "denormalizr",
-  "version": "0.4.1",
+  "version": "1.0.0",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
   "files": [
@@ -45,10 +45,13 @@
     "immutable": "^3.8.1",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.1.0",
+    "normalizr": "^3.0.2",
     "rimraf": "^2.5.4"
   },
   "dependencies": {
-    "lodash": "^4.16.3",
-    "normalizr": "^2.0.0"
+    "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
+    "normalizr": "^3.0.2"
   }
 }

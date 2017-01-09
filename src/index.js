@@ -1,26 +1,30 @@
-import IterableSchema from 'normalizr/lib/IterableSchema';
-import EntitySchema from 'normalizr/lib/EntitySchema';
-import UnionSchema from 'normalizr/lib/UnionSchema';
+import { schema as Schema } from 'normalizr';
 import merge from 'lodash/merge';
 import isObject from 'lodash/isObject';
-import { isImmutable, getIn, setIn, moveUnionToSchema } from './ImmutableUtils';
+import { isImmutable, getIn, setIn } from './ImmutableUtils';
+
+const EntitySchema = Schema.Entity;
+const ArraySchema = Schema.Array;
+const UnionSchema = Schema.Union;
+const ValuesSchema = Schema.Values;
 
 /**
  * Take either an entity or id and derive the other.
  *
  * @param   {object|Immutable.Map|number|string} entityOrId
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @returns {object}
  */
 function resolveEntityOrId(entityOrId, entities, schema) {
-  const key = schema.getKey();
+  const key = schema.key;
 
   let entity = entityOrId;
   let id = entityOrId;
 
   if (isObject(entityOrId)) {
-    id = getIn(entity, [schema.getIdAttribute()]);
+    const mutableEntity = isImmutable(entity) ? entity.toJS() : entity;
+    id = schema.getId(mutableEntity) || getIn(entity, ['id']);
   } else {
     entity = getIn(entities, [key, id]);
   }
@@ -33,13 +37,14 @@ function resolveEntityOrId(entityOrId, entities, schema) {
  *
  * @param   {Array|Immutable.List} items
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @param   {object} bag
  * @returns {Array|Immutable.List}
  */
 function denormalizeIterable(items, entities, schema, bag) {
-  const itemSchema = schema.getItemSchema();
   const isMappable = typeof items.map === 'function';
+
+  const itemSchema = Array.isArray(schema) ? schema[0] : schema.schema;
 
   // Handle arrayOf iterables
   if (isMappable) {
@@ -57,19 +62,24 @@ function denormalizeIterable(items, entities, schema, bag) {
 /**
  * @param   {object|Immutable.Map|number|string} entity
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @param   {object} bag
  * @returns {object|Immutable.Map}
  */
 function denormalizeUnion(entity, entities, schema, bag) {
-  const itemSchema = schema.getItemSchema();
-  const denormalized = denormalize(
-    moveUnionToSchema(entity),
+  const schemaAttribute = getIn(entity, ['schema']);
+  const itemSchema = getIn(schema, ['schema', schemaAttribute]);
+  if (!itemSchema) return entity;
+
+  const mutableEntity = isImmutable(entity) ? entity.toJS() : entity;
+  const id = itemSchema.getId(mutableEntity) || getIn(entity, ['id']);
+
+  return denormalize(
+    id,
     entities,
     itemSchema,
     bag,
   );
-  return getIn(denormalized, [isImmutable(entity) ? entity.get('schema') : entity.schema]);
 }
 
 /**
@@ -81,19 +91,24 @@ function denormalizeUnion(entity, entities, schema, bag) {
  *
  * @param   {object|Immutable.Map} obj
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @param   {object} bag
  * @returns {object|Immutable.Map}
  */
 function denormalizeObject(obj, entities, schema, bag) {
   let denormalized = obj;
 
-  Object.keys(schema)
-    .filter(attribute => attribute.substring(0, 1) !== '_')
+  const schemaDefinition = typeof schema.inferSchema === 'function'
+    ? schema.inferSchema(obj)
+    : (schema.schema || schema)
+  ;
+
+  Object.keys(schemaDefinition)
+    // .filter(attribute => attribute.substring(0, 1) !== '_')
     .filter(attribute => typeof getIn(obj, [attribute]) !== 'undefined')
     .forEach((attribute) => {
       const item = getIn(obj, [attribute]);
-      const itemSchema = getIn(schema, [attribute]);
+      const itemSchema = getIn(schemaDefinition, [attribute]);
 
       denormalized = setIn(denormalized, [attribute], denormalize(item, entities, itemSchema, bag));
     });
@@ -107,12 +122,12 @@ function denormalizeObject(obj, entities, schema, bag) {
  *
  * @param   {object|Immutable.Map|number|string} entityOrId
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @param   {object} bag
  * @returns {object|Immutable.Map}
  */
 function denormalizeEntity(entityOrId, entities, schema, bag) {
-  const key = schema.getKey();
+  const key = schema.key;
   const { entity, id } = resolveEntityOrId(entityOrId, entities, schema);
 
   if (!bag.hasOwnProperty(key)) {
@@ -142,7 +157,7 @@ function denormalizeEntity(entityOrId, entities, schema, bag) {
  *
  * @param   {object|Immutable.Map|array|Immutable.list|number|string} obj
  * @param   {object|Immutable.Map} entities
- * @param   {Schema} schema
+ * @param   {schema.Entity} schema
  * @param   {object} bag
  * @returns {object|Immutable.Map|array|Immutable.list}
  */
@@ -153,11 +168,16 @@ export function denormalize(obj, entities, schema, bag = {}) {
 
   if (schema instanceof EntitySchema) {
     return denormalizeEntity(obj, entities, schema, bag);
-  } else if (schema instanceof IterableSchema) {
+  } else if (
+    schema instanceof ValuesSchema ||
+    schema instanceof ArraySchema ||
+    Array.isArray(schema)
+  ) {
     return denormalizeIterable(obj, entities, schema, bag);
   } else if (schema instanceof UnionSchema) {
     return denormalizeUnion(obj, entities, schema, bag);
   }
+
   // Ensure we don't mutate it non-immutable objects
   const entity = isImmutable(obj) ? obj : merge({}, obj);
   return denormalizeObject(entity, entities, schema, bag);
