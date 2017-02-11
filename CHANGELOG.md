@@ -1,6 +1,11 @@
-### [v0.5.0](https://github.com/gpbl/denormalizr/tree/v0.5.0) (2017-02-10)
+### [v0.5.1](https://github.com/gpbl/denormalizr/tree/v0.5.1) (2017-02-11)
+
+* Fixes support for unpkg
+
+### [v0.5.0](https://github.com/gpbl/denormalizr/tree/v0.5.0) (2017-02-11)
 
 * Add support for normalizr 3.0 ([\#35](https://github.com/gpbl/denormalizr/pull/35)) - by [@brunolemos](https://github.com/brunolemos)
+* Add module to unpkg: `https://unpkg.com/denormalizr`
 
 ### [v0.4.1](https://github.com/gpbl/denormalizr/tree/v0.4.1) (2016-11-27)
 

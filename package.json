@@ -1,11 +1,11 @@
 {
   "name": "denormalizr",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
   "browser": "dist/denormalizr.min.js",
   "files": [
-    "lib"
+    "lib", "dist"
   ],
   "scripts": {
     "cover": "babel-node ./node_modules/istanbul/lib/cli cover -- _mocha --recursive --reporter spec",
