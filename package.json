@@ -3,16 +3,18 @@
   "version": "0.5.0",
   "description": "Denormalizer for normalizr",
   "main": "lib/index.js",
+  "browser": "dist/denormalizr.min.js",
   "files": [
     "lib"
   ],
   "scripts": {
     "cover": "babel-node ./node_modules/istanbul/lib/cli cover -- _mocha --recursive --reporter spec",
     "prebuild": "rimraf dist lib",
-    "build": "babel src --out-dir lib",
+    "build": "babel src --out-dir lib && npm run dist",
     "test": "mocha --compilers js:babel-core/register --recursive",
     "test:watch": "npm run test -- --watch",
     "prepublish": "npm run build",
+    "dist": "webpack -p",
     "lint": "eslint src test"
   },
   "repository": {
@@ -46,7 +48,8 @@
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.1.0",
     "normalizr": "^3.2.1",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.5.4",
+    "webpack": "^2.2.1"
   },
   "dependencies": {
     "lodash": "^4.17.4"
