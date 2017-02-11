@@ -50,9 +50,9 @@ denormalize (entity, entities, schema) -> Object|Array|Immutable.Map|Immutable.L
 
 > An object to entities used to denormalize entity and its referred entities.
 
-**entitySchema** `{Schema}`
+**entitySchema** `{schema.Entity}`
 
-> The normalizr Schema used to define `entity`.
+> The normalizr schema used to define `entity`.
 
 ### Returns
 
@@ -86,11 +86,11 @@ where each article has a `author` field.
 To normalize this response with normalizr, we can define two Schemas: `articleSchema` and `authorSchema`.
 
 ```js
-import { normalize, arrayOf, Schema } from 'normalizr';
+import { normalize, schema } from 'normalizr';
 
-const articleSchema = new Schema('articles');
-const authorSchema = new Schema('authors');
-const articleList = arrayOf(articleSchema);
+const articleSchema = new schema.Entity('articles');
+const authorSchema = new schema.Entity('authors');
+const articleList = new schema.Array(articleSchema);
 
 articleSchema.define({
   author: authorSchema,
@@ -256,9 +256,9 @@ Denormalizr can handle circular references caused by recursive schemas (see [#2]
 For example, take these schemas, where articles have an author property containing a list of articles: 
 
 ```js
-const articleSchema = new Schema('articles');
-const authorSchema = new Schema('author');
-const articleList = arrayOf(articleSchema);
+const articleSchema = new schema.Entity('articles');
+const authorSchema = new schema.Entity('author');
+const articleList = new schema.Array(articleSchema);
 
 articleSchema.define({
   author: authorSchema,
