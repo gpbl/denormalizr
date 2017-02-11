@@ -1,3 +1,7 @@
+### [v0.5.0](https://github.com/gpbl/denormalizr/tree/v0.5.0) (2017-02-10)
+
+* Add support for normalizr 3.0 ([\#35](https://github.com/gpbl/denormalizr/pull/35)) - by [@brunolemos](https://github.com/brunolemos)
+
 ### [v0.4.1](https://github.com/gpbl/denormalizr/tree/v0.4.1) (2016-11-27)
 
 * Move `normalizr` to dependencies from peer dependencies ([\#32](https://github.com/gpbl/denormalizr/pull/32))
