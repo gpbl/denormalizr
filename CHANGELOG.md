@@ -1,3 +1,7 @@
+### [v0.5.2](https://github.com/gpbl/denormalizr/tree/v0.5.2) (2017-02-12)
+
+* Fixes an issue when bundling the module with webpack ([\#38](https://github.com/gpbl/denormalizr/pull/38))
+
 ### [v0.5.1](https://github.com/gpbl/denormalizr/tree/v0.5.1) (2017-02-11)
 
 * Fixes support for unpkg
