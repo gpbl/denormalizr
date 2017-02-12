@@ -2,19 +2,20 @@
   "name": "denormalizr",
   "version": "0.5.1",
   "description": "Denormalizer for normalizr",
-  "main": "lib/index.js",
-  "browser": "dist/denormalizr.min.js",
+  "main": "dist/src/index.js",
   "files": [
-    "lib", "dist"
+    "dist"
   ],
   "scripts": {
     "cover": "babel-node ./node_modules/istanbul/lib/cli cover -- _mocha --recursive --reporter spec",
-    "prebuild": "rimraf dist lib",
-    "build": "babel src --out-dir lib && npm run dist",
+    "prebuild": "rimraf dist",
+    "prepublish": "npm run build",
+    "build": "npm run build:node && npm run build:production && npm run build:development",
+    "build:node": "babel src --out-dir dist/src",
+    "build:production": "NODE_ENV=production webpack -p", 
+    "build:development": "NODE_ENV=development webpack", 
     "test": "mocha --compilers js:babel-core/register --recursive",
     "test:watch": "npm run test -- --watch",
-    "prepublish": "npm run build",
-    "dist": "webpack -p",
     "lint": "eslint src test"
   },
   "repository": {
