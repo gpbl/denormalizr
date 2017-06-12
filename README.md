@@ -1,3 +1,9 @@
+## Deprecated
+
+⚠️ This package [is deprecated](https://github.com/gpbl/denormalizr/issues/39). Please use the normalizr's built-in [denormalize function](https://github.com/paularmstrong/normalizr/blob/master/docs/api.md#denormalizeinput-schema-entities), thanks!
+
+--- 
+
 <p align="center">
     <img style="margin: 0 auto" src="https://cloud.githubusercontent.com/assets/120693/19218826/36eb41c2-8e04-11e6-98a5-2fdad6ca45fe.png" width="359">
 </p>
