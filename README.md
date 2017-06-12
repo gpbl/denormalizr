@@ -1,6 +1,6 @@
 ## Deprecated
 
-⚠️ This package [is deprecated](https://github.com/gpbl/denormalizr/issues/39). Please use the normalizr's built-in [denormalize function](https://github.com/paularmstrong/normalizr/blob/master/docs/api.md#denormalizeinput-schema-entities), thanks!
+⚠️ This package [is deprecated](https://github.com/gpbl/denormalizr/issues/39). Please use normalizr's built-in [`denormalize()`](https://github.com/paularmstrong/normalizr/blob/master/docs/api.md#denormalizeinput-schema-entities), thanks!
 
 --- 
 
